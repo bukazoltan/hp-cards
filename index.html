@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Famous Witches & Wizards – HP PC Cards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,500;0,600;1,500&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #06080d;
+      --bg-panel: #0e1422;
+      --gold: #d4ae52;
+      --gold-dim: #9a7c38;
+      --gold-light: #f0de96;
+      --text: #ede3cc;
+      --text-dim: #a8926e;
+      --text-muted: #8a7a68;
+      --border: rgba(201, 164, 67, .25);
+      --border-hi: rgba(201, 164, 67, .55);
+
+      --c-hp1: #df5040;
+      --g-hp1: rgba(223, 80, 64, .35);
+      --c-hp2: #28b060;
+      --g-hp2: rgba(40, 176, 96, .35);
+      --c-hp3: #4a92dc;
+      --g-hp3: rgba(74, 146, 220, .35);
+
+      --active-c: var(--c-hp1);
+      --active-g: var(--g-hp1);
+    }
+
+    html {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-weight: 500;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-size: 19px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-shadow: 0 0 0.5px currentColor;
+    }
+
+    /* ── Canvas starfield ─────────────────────────── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Grain overlay ────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: .15;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+    }
+
+    /* ── App shell ────────────────────────────────── */
+    #app {
+      position: relative;
+      z-index: 2;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      min-height: 100vh;
+    }
+
+    /* ── Utilities ────────────────────────────────── */
+    .page {
+      animation: pg-in .35s ease-out both;
+    }
+
+    @keyframes pg-in {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .ornament {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      font-size: .9rem;
+      color: var(--gold-dim);
+      user-select: none;
+    }
+
+    .ornament::before,
+    .ornament::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+    }
+
+    /* ── Loading ──────────────────────────────────── */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      font-family: 'Cinzel', serif;
+      font-size: .75rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* ═══════════════════════════════════════════════
+       HOME
+    ═══════════════════════════════════════════════ */
+    .home-header {
+      text-align: center;
+      padding: 5.5rem 0 4rem;
+    }
+
+    .home-title {
+      font-family: 'Cinzel Decorative', 'Cinzel', serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 5.5vw, 4.2rem);
+      line-height: 1.1;
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(201, 164, 67, .3), 0 0 120px rgba(201, 164, 67, .12);
+      margin: 1.5rem 0 .75rem;
+    }
+
+    .home-sub {
+      font-family: 'Cinzel', serif;
+      font-size: .72rem;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── Game grid ────────────────────────────────── */
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.5rem;
+      padding-bottom: 6rem;
+    }
+
+    .game-panel {
+      position: relative;
+      overflow: hidden;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 2.5rem 2.25rem 2.25rem;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+    }
+
+    .game-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .4s;
+    }
+
+    .game-panel.hp1::before {
+      background: radial-gradient(ellipse at 50% -10%, var(--g-hp1), transparent 65%);
+    }
+
+    .game-panel.hp2::before {
+      background: radial-gradient(ellipse at 50% -10%, var(--g-hp2), transparent 65%);
+    }
+
+    .game-panel.hp3::before {
+      background: radial-gradient(ellipse at 50% -10%, var(--g-hp3), transparent 65%);
+    }
+
+    .game-panel:hover {
+      border-color: var(--border-hi);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    }
+
+    .game-panel:hover::before {
+      opacity: 1;
+    }
+
+    .game-panel.hp1 {
+      --pc: var(--c-hp1);
+    }
+
+    .game-panel.hp2 {
+      --pc: var(--c-hp2);
+    }
+
+    .game-panel.hp3 {
+      --pc: var(--c-hp3);
+    }
+
+    .panel-roman {
+      position: relative;
+      font-family: 'Cinzel', serif;
+      font-size: .65rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--pc);
+      margin-bottom: 1.1rem;
+    }
+
+    .panel-title {
+      position: relative;
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .35rem;
+      line-height: 1.3;
+    }
+
+    .panel-year {
+      position: relative;
+      font-size: .9rem;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+
+    .panel-count {
+      position: relative;
+      font-family: 'Cinzel', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--gold);
+      margin-bottom: .2rem;
+    }
+
+    .panel-count-label {
+      position: relative;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 2.25rem;
+    }
+
+    .btn-draw {
+      position: relative;
+      display: block;
+      width: 100%;
+      padding: .85rem 1.5rem;
+      background: transparent;
+      border: 1px solid var(--pc);
+      color: var(--pc);
+      font-family: 'Cinzel', serif;
+      font-size: .72rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+
+    .btn-draw:hover {
+      background: var(--pc);
+      color: var(--bg);
+    }
+
+    /* ═══════════════════════════════════════════════
+       CARD PAGE
+    ═══════════════════════════════════════════════ */
+    .card-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 2.75rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .breadcrumb {
+      font-family: 'Cinzel', serif;
+      font-size: .68rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb a {
+      color: var(--gold);
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--gold-light);
+    }
+
+    .breadcrumb-sep {
+      color: var(--text-muted);
+    }
+
+    .btn-rnd {
+      padding: .55rem 1.2rem;
+      background: transparent;
+      border: 1px solid var(--active-c);
+      color: var(--active-c);
+      font-family: 'Cinzel', serif;
+      font-size: .66rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background .2s, color .2s;
+    }
+
+    .btn-rnd:hover {
+      background: var(--active-c);
+      color: var(--bg);
+    }
+
+    /* ── Two-column layout ────────────────────────── */
+    .card-layout {
+      display: grid;
+      grid-template-columns: minmax(180px, 320px) 1fr;
+      gap: 4rem;
+      align-items: start;
+      padding-bottom: 5rem;
+    }
+
+    /* ── Card image ───────────────────────────────── */
+    .card-img-zone {
+      position: relative;
+    }
+
+    .card-glow {
+      position: absolute;
+      inset: -30px;
+      background: radial-gradient(ellipse, var(--active-g), transparent 70%);
+      z-index: 0;
+      animation: glow-pulse 3.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow-pulse {
+      from {
+        opacity: .45;
+        transform: scale(.92);
+      }
+
+      to {
+        opacity: .9;
+        transform: scale(1.06);
+      }
+    }
+
+    .card-img-wrap {
+      position: relative;
+      z-index: 1;
+      animation: img-reveal .65s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    @keyframes img-reveal {
+      from {
+        opacity: 0;
+        transform: perspective(700px) rotateY(-22deg) translateX(-18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: perspective(700px) rotateY(0deg) translateX(0);
+      }
+    }
+
+    /* Shimmer sweep on hover */
+    .card-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(108deg, transparent 35%, rgba(255, 255, 255, .07) 50%, transparent 65%);
+      opacity: 0;
+      transition: opacity .3s, transform .5s;
+      transform: translateX(-30px);
+      pointer-events: none;
+    }
+
+    .card-img-wrap:hover::after {
+      opacity: 1;
+      transform: translateX(30px);
+    }
+
+    .card-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--border);
+    }
+
+    .rarity-badge {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: .28rem .75rem;
+      font-family: 'Cinzel', serif;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      border: 1px solid;
+    }
+
+    .rarity-badge.bronze {
+      color: #c87d32;
+      border-color: #c87d32;
+    }
+
+    .rarity-badge.silver {
+      color: #b0b8c8;
+      border-color: #b0b8c8;
+    }
+
+    .rarity-badge.gold {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    /* ── Card details ─────────────────────────────── */
+    .card-details {
+      animation: det-reveal .65s .18s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    @keyframes det-reveal {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    .card-meta-line {
+      font-family: 'Cinzel', serif;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--active-c);
+      margin-bottom: .8rem;
+    }
+
+    .card-name {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.7rem, 3.8vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: .5rem;
+    }
+
+    .card-dates {
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 1.1rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .rule {
+      width: 56px;
+      height: 1px;
+      background: var(--gold-dim);
+      margin: 1.4rem 0;
+    }
+
+    .card-desc {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+
+    .card-loc {
+      background: rgba(201, 164, 67, .06);
+      border-left: 2px solid var(--gold-dim);
+      padding: 1.1rem 1.4rem;
+      margin-bottom: 2.75rem;
+    }
+
+    .loc-label {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .5rem;
+    }
+
+    .loc-text {
+      font-size: 1.05rem;
+      color: var(--text);
+    }
+
+    /* ── Actions ──────────────────────────────────── */
+    .card-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .btn-primary {
+      padding: .78rem 2rem;
+      background: var(--active-c);
+      color: var(--bg);
+      border: none;
+      font-family: 'Cinzel', serif;
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s, transform .15s;
+    }
+
+    .btn-primary:hover {
+      opacity: .82;
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      padding: .78rem 2rem;
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--text-muted);
+      font-family: 'Cinzel', serif;
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: color .2s, border-color .2s;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--text-dim);
+    }
+
+    /* ── Prev / Next ──────────────────────────────── */
+    .card-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.75rem;
+    }
+
+    .nav-btn {
+      text-decoration: none;
+      color: var(--text-dim);
+      display: block;
+      transition: color .2s;
+    }
+
+    .nav-btn:hover {
+      color: var(--gold);
+    }
+
+    .nav-btn.next {
+      text-align: right;
+    }
+
+    .nav-dir {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: .62rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .3rem;
+    }
+
+    .nav-name {
+      display: block;
+      font-size: .9rem;
+      font-weight: 600;
+      font-family: 'Cinzel', serif;
+      color: var(--text-dim);
+    }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 680px) {
+      #app {
+        padding: 0 1.25rem;
+      }
+
+      .card-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .card-img-zone {
+        max-width: 280px;
+      }
+
+      .home-title {
+        font-size: 2rem;
+      }
+    }
+
+    /* ── Triple draw page ─────────────────────────── */
+    .triple-header {
+      text-align: center;
+      padding: 4rem 0 3rem;
+    }
+
+    .triple-title {
+      font-family: 'Cinzel Decorative', 'Cinzel', serif;
+      font-weight: 700;
+      font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+      color: var(--gold);
+      text-shadow: 0 0 50px rgba(212, 174, 82, .3);
+      margin-bottom: .6rem;
+    }
+
+    .triple-sub {
+      font-family: 'Cinzel', serif;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .triple-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      padding-bottom: 5rem;
+    }
+
+    .triple-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 1.75rem;
+      transition: border-color .3s, box-shadow .3s;
+    }
+
+    .triple-card:hover {
+      border-color: var(--border-hi);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+    }
+
+    .triple-card.hp1 {
+      --tc: var(--c-hp1);
+    }
+
+    .triple-card.hp2 {
+      --tc: var(--c-hp2);
+    }
+
+    .triple-card.hp3 {
+      --tc: var(--c-hp3);
+    }
+
+    .triple-game-label {
+      font-family: 'Cinzel', serif;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--tc);
+      margin-bottom: 1rem;
+    }
+
+    .triple-img {
+      display: block;
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      margin: 0 auto 1.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .triple-card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: .35rem;
+      text-align: center;
+    }
+
+    .triple-card-dates {
+      font-style: italic;
+      font-size: .95rem;
+      color: var(--text-dim);
+      text-align: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .triple-card-loc {
+      font-size: .9rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      padding-top: .9rem;
+      margin-top: .5rem;
+    }
+
+    .triple-card-loc strong {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: .62rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: .3rem;
+    }
+
+    .triple-view-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.25rem;
+      font-family: 'Cinzel', serif;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--tc);
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+
+    .triple-view-link:hover {
+      opacity: .7;
+    }
+
+    .btn-redraw {
+      display: block;
+      margin: 0 auto 4rem;
+      padding: .85rem 2.5rem;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+
+    .btn-redraw:hover {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    /* ── Shared card page ─────────────────────────── */
+    .shared-hero {
+      text-align: center;
+      padding: 4rem 0 2.5rem;
+    }
+
+    .shared-name {
+      font-family: 'Cinzel Decorative', 'Cinzel', serif;
+      font-weight: 700;
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      color: var(--gold);
+      text-shadow: 0 0 60px rgba(212, 174, 82, .35);
+      margin: 1.2rem 0 .5rem;
+      line-height: 1.15;
+    }
+
+    .shared-sub {
+      font-family: 'Cinzel', serif;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .shared-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.75rem;
+      padding-bottom: 2rem;
+    }
+
+    @media (max-width: 700px) {
+      .shared-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .shared-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      padding: 1.75rem;
+      text-align: center;
+      transition: border-color .3s, box-shadow .3s;
+    }
+
+    .shared-card:hover {
+      border-color: var(--border-hi);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .4);
+    }
+
+    .shared-card.hp1 {
+      --sc: var(--c-hp1);
+    }
+
+    .shared-card.hp2 {
+      --sc: var(--c-hp2);
+    }
+
+    .shared-card.hp3 {
+      --sc: var(--c-hp3);
+    }
+
+    .shared-game-label {
+      font-family: 'Cinzel', serif;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--sc);
+      margin-bottom: 1rem;
+    }
+
+    .shared-img {
+      display: block;
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      margin: 0 auto 1.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .shared-rarity {
+      display: inline-block;
+      margin-bottom: 1rem;
+      padding: .2rem .6rem;
+      font-family: 'Cinzel', serif;
+      font-size: .58rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      border: 1px solid;
+    }
+
+    .shared-rarity.bronze {
+      color: #c87d32;
+      border-color: #c87d32;
+    }
+
+    .shared-rarity.silver {
+      color: #b0b8c8;
+      border-color: #b0b8c8;
+    }
+
+    .shared-rarity.gold {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .shared-loc {
+      font-size: .9rem;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border);
+      padding-top: .9rem;
+      margin-top: .75rem;
+      text-align: left;
+    }
+
+    .shared-loc strong {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: .6rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: .3rem;
+    }
+
+    .shared-view-link {
+      display: block;
+      margin-top: 1.25rem;
+      font-family: 'Cinzel', serif;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--sc);
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+
+    .shared-view-link:hover {
+      opacity: .7;
+    }
+
+    /* ══════════════════════════════════════════════
+       LIGHT MODE
+    ══════════════════════════════════════════════ */
+    [data-theme="light"] {
+      --bg: #f2e8d5;
+      --bg-panel: #e4d4b4;
+      --gold: #6b4608;
+      --gold-dim: #8f6018;
+      --gold-light: #4a3006;
+      --text: #100c04;
+      --text-dim: #4a3418;
+      --text-muted: #6e5428;
+      --border: rgba(90, 55, 8, .28);
+      --border-hi: rgba(90, 55, 8, .65);
+
+      --c-hp1: #8c1a10;
+      --g-hp1: rgba(140, 26, 16, .14);
+      --c-hp2: #0e4e24;
+      --g-hp2: rgba(14, 78, 36, .14);
+      --c-hp3: #0e3264;
+      --g-hp3: rgba(14, 50, 100, .14);
+    }
+
+    [data-theme="light"] body {
+      text-shadow: none;
+    }
+
+    [data-theme="light"] .home-title {
+      text-shadow: 0 1px 8px rgba(100, 70, 10, .18);
+    }
+
+    [data-theme="light"] .card-glow {
+      opacity: .3;
+    }
+
+    [data-theme="light"] .game-panel::before {
+      opacity: 0 !important;
+    }
+
+    [data-theme="light"] .game-panel:hover {
+      box-shadow: 0 8px 32px rgba(90, 55, 8, .15);
+    }
+
+    [data-theme="light"] .card-loc {
+      background: rgba(90, 55, 8, .06);
+    }
+
+    [data-theme="light"] .rarity-badge.bronze {
+      color: #7a4010;
+      border-color: #7a4010;
+    }
+
+    [data-theme="light"] .rarity-badge.silver {
+      color: #404858;
+      border-color: #404858;
+    }
+
+    /* ── Theme toggle ─────────────────────────────── */
+    .theme-toggle {
+      position: fixed;
+      top: 1.1rem;
+      right: 1.4rem;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .7rem 1.3rem;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-hi);
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: background .25s, color .2s, border-color .2s, transform .15s;
+      user-select: none;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, .3);
+    }
+
+    .theme-toggle:hover {
+      background: var(--gold);
+      color: var(--bg);
+      border-color: var(--gold);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .35);
+    }
+
+    .theme-toggle .toggle-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    /* ── Scrollbar ────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--gold-dim);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="starfield"></canvas>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+    <span class="toggle-icon">☀</span><span class="toggle-label">Light</span>
+  </button>
+  <div id="app">
+    <div class="loading">Unpacking wizard cards…</div>
+  </div>
+
+  <script>
+    /* ── Theme ────────────────────────────────────────────────────────────────── */
+    const Theme = {
+      init() {
+        const saved = localStorage.getItem('theme') || 'dark';
+        this.set(saved, false);
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+          this.set(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+        });
+      },
+      set(t, save = true) {
+        document.documentElement.dataset.theme = t;
+        const btn = document.getElementById('theme-toggle');
+        btn.querySelector('.toggle-icon').textContent = t === 'light' ? '☽' : '☀';
+        btn.querySelector('.toggle-label').textContent = t === 'light' ? 'Dark' : 'Light';
+        if (save) localStorage.setItem('theme', t);
+      },
+      isLight() { return document.documentElement.dataset.theme === 'light'; },
+    };
+    Theme.init();
+
+    /* ── Starfield ────────────────────────────────────────────────────────────── */
+    (function () {
+      const cvs = document.getElementById('starfield');
+      const ctx = cvs.getContext('2d');
+      let W, H, stars;
+
+      function resize() {
+        W = cvs.width = window.innerWidth;
+        H = cvs.height = window.innerHeight;
+      }
+
+      function mkStars(n) {
+        return Array.from({ length: n }, () => ({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() * 1.15 + .15,
+          phase: Math.random() * Math.PI * 2,
+          speed: Math.random() * .0015 + .0005,
+        }));
+      }
+
+      function draw(t) {
+        ctx.clearRect(0, 0, W, H);
+        const light = Theme.isLight();
+        // Dark: pale gold stars. Light: soft warm dust motes at low opacity.
+        const [r, g, b] = light ? [140, 95, 30] : [210, 188, 138];
+        const maxA = light ? .18 : .77;
+        const minA = light ? .03 : .12;
+        for (const s of stars) {
+          const a = ((Math.sin(t * s.speed + s.phase) + 1) / 2) * (maxA - minA) + minA;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(2)})`;
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+
+      resize();
+      stars = mkStars(220);
+      window.addEventListener('resize', () => { resize(); stars = mkStars(220); });
+      requestAnimationFrame(draw);
+    })();
+
+    /* ── Helpers ──────────────────────────────────────────────────────────────── */
+    function esc(s) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    const GAME_META = {
+      HP1: { title: "The Philosopher's Stone", short: "Philosopher's Stone", year: '2001', roman: 'Game I', slug: 'hp1', c: 'var(--c-hp1)', g: 'var(--g-hp1)' },
+      HP2: { title: "The Chamber of Secrets", short: "Chamber of Secrets", year: '2002', roman: 'Game II', slug: 'hp2', c: 'var(--c-hp2)', g: 'var(--g-hp2)' },
+      HP3: { title: "The Prisoner of Azkaban", short: "Prisoner of Azkaban", year: '2004', roman: 'Game III', slug: 'hp3', c: 'var(--c-hp3)', g: 'var(--g-hp3)' },
+    };
+
+    /* ── App ──────────────────────────────────────────────────────────────────── */
+    const App = {
+      cards: null,
+
+      async init() {
+        this.cards = await fetch('/cards.json').then(r => r.json());
+
+        document.addEventListener('click', e => {
+          const el = e.target.closest('[data-link]');
+          if (!el) return;
+          e.preventDefault();
+          this.go(el.dataset.link);
+        });
+
+        window.addEventListener('popstate', () => this.route());
+        this.route();
+      },
+
+      go(path) {
+        history.pushState({}, '', path);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this.route();
+      },
+
+      route() {
+        const [, gameSlug, rawId] = window.location.pathname.split('/');
+        const game = (gameSlug || '').toUpperCase();
+
+        if (gameSlug === 'random') { this.renderTriple(); return; }
+        if (gameSlug === 'shared') { this.renderShared(); return; }
+        if (!gameSlug || !GAME_META[game]) { this.renderHome(); return; }
+
+        const pool = this.cards.filter(c => c.game === game);
+
+        if (!rawId || rawId === 'random') {
+          const card = pool[Math.floor(Math.random() * pool.length)];
+          history.replaceState({}, '', `/${gameSlug}/${card.game_id}`);
+          this.renderCard(card, pool);
+          return;
+        }
+
+        const id = parseInt(rawId, 10);
+        const card = pool.find(c => c.game_id === id);
+        card ? this.renderCard(card, pool) : this.renderHome();
+      },
+
+      renderShared() {
+        document.documentElement.style.removeProperty('--active-c');
+        document.documentElement.style.removeProperty('--active-g');
+        document.title = 'Same Card, Three Games – HP PC Cards';
+
+        // Find all names present in all 3 games
+        const byName = {};
+        for (const c of this.cards) {
+          const key = c.name.trim().toLowerCase();
+          if (!byName[key]) byName[key] = {};
+          byName[key][c.game] = c;
+        }
+        const shared = Object.values(byName).filter(g => g.HP1 && g.HP2 && g.HP3);
+        const group = shared[Math.floor(Math.random() * shared.length)];
+        const name = group.HP1.name;
+
+        const cardHtml = (card, m) => `
+      <div class="shared-card ${m.slug}">
+        <p class="shared-game-label">${m.roman} · ${esc(m.short)}</p>
+        <img class="shared-img" src="/${esc(card.image_local)}" alt="${esc(card.name)}">
+        ${card.rarity ? `<div class="shared-rarity ${card.rarity.toLowerCase()}">${esc(card.rarity)}</div>` : ''}
+        ${card.location ? `
+          <div class="shared-loc">
+            <strong>Where to find</strong>
+            ${esc(card.location)}
+          </div>` : ''}
+        <a class="shared-view-link" data-link="/${m.slug}/${card.game_id}">View full card →</a>
+      </div>`;
+
+        document.getElementById('app').innerHTML = `
+      <div class="page">
+        <div class="card-topbar">
+          <nav class="breadcrumb">
+            <a data-link="/">Collection</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>Same Card, Three Games</span>
+          </nav>
+          <a class="btn-rnd" data-link="/shared/random">✦ Draw Another</a>
+        </div>
+
+        <header class="shared-hero">
+          <div class="ornament">✦</div>
+          <h1 class="shared-name">${esc(name)}</h1>
+          <p class="shared-sub">Same wizard · Three games</p>
+          <div class="ornament" style="margin-top:1.2rem">✦</div>
+        </header>
+
+        <div class="shared-grid">
+          ${cardHtml(group.HP1, GAME_META.HP1)}
+          ${cardHtml(group.HP2, GAME_META.HP2)}
+          ${cardHtml(group.HP3, GAME_META.HP3)}
+        </div>
+
+        <a class="btn-redraw" data-link="/shared/random">✦ Draw Another</a>
+      </div>`;
+      },
+
+      renderTriple() {
+        document.documentElement.style.removeProperty('--active-c');
+        document.documentElement.style.removeProperty('--active-g');
+        document.title = 'Draw Three – HP PC Cards';
+
+        const pick = game => {
+          const pool = this.cards.filter(c => c.game === game);
+          return pool[Math.floor(Math.random() * pool.length)];
+        };
+
+        const cards = { HP1: pick('HP1'), HP2: pick('HP2'), HP3: pick('HP3') };
+
+        const cardHtml = (card, m) => `
+      <div class="triple-card ${m.slug}">
+        <p class="triple-game-label">${m.roman} · ${esc(m.short)}</p>
+        <img class="triple-img" src="/${esc(card.image_local)}" alt="${esc(card.name)}">
+        <p class="triple-card-name">${esc(card.name)}</p>
+        ${card.dates ? `<p class="triple-card-dates">${esc(card.dates)}</p>` : ''}
+        ${card.location ? `
+          <div class="triple-card-loc">
+            <strong>Where to find</strong>
+            ${esc(card.location)}
+          </div>` : ''}
+        <a class="triple-view-link" data-link="/${m.slug}/${card.game_id}">View full card →</a>
+      </div>`;
+
+        document.getElementById('app').innerHTML = `
+      <div class="page">
+        <div class="card-topbar">
+          <nav class="breadcrumb">
+            <a data-link="/">Collection</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>Draw Three</span>
+          </nav>
+          <a class="btn-rnd" data-link="/random">✦ Redraw All</a>
+        </div>
+
+        <header class="triple-header">
+          <div class="ornament">✦</div>
+          <h1 class="triple-title" style="margin: 1.2rem 0 .5rem">Draw Three</h1>
+          <p class="triple-sub">One card from each game</p>
+          <div class="ornament" style="margin-top:1.2rem">✦</div>
+        </header>
+
+        <div class="triple-grid">
+          ${cardHtml(cards.HP1, GAME_META.HP1)}
+          ${cardHtml(cards.HP2, GAME_META.HP2)}
+          ${cardHtml(cards.HP3, GAME_META.HP3)}
+        </div>
+
+        <a class="btn-redraw" data-link="/random">✦ Draw Again</a>
+      </div>`;
+      },
+
+      renderHome() {
+        document.documentElement.style.removeProperty('--active-c');
+        document.documentElement.style.removeProperty('--active-g');
+        document.title = 'Famous Witches & Wizards – HP PC Cards';
+
+        const counts = {};
+        for (const g of Object.keys(GAME_META))
+          counts[g] = this.cards.filter(c => c.game === g).length;
+
+        document.getElementById('app').innerHTML = `
+      <div class="page">
+        <header class="home-header">
+          <div class="ornament">✦</div>
+          <h1 class="home-title">Famous Witches<br>&amp; Wizards</h1>
+          <p class="home-sub">Harry Potter · PC Collection · 2001–2004</p>
+          <div class="ornament" style="margin-bottom:1.5rem">✦</div>
+          <div style="display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+            <a class="btn-draw" style="display:inline-block;width:auto;padding:1.1rem 2.75rem;border-color:var(--gold);color:var(--gold);font-size:.82rem;letter-spacing:.18em;border-width:2px" data-link="/random">✦ &nbsp;Draw One from Each Game</a>
+            <a class="btn-draw" style="display:inline-block;width:auto;padding:1.1rem 2.75rem;border-color:var(--gold);color:var(--gold);font-size:.82rem;letter-spacing:.18em;border-width:2px" data-link="/shared/random">✦ &nbsp;Same Card, Three Games</a>
+          </div>
+        </header>
+
+        <div class="games-grid">
+          ${Object.entries(GAME_META).map(([g, m]) => `
+            <article class="game-panel ${m.slug}">
+              <p class="panel-roman">${m.roman}</p>
+              <h2 class="panel-title">Harry Potter &amp; ${esc(m.title)}</h2>
+              <p class="panel-year">${m.year} &nbsp;·&nbsp; PC</p>
+              <div class="panel-count">${counts[g]}</div>
+              <p class="panel-count-label">Wizard Cards</p>
+              <a class="btn-draw" data-link="/${m.slug}/random">Draw a Card</a>
+            </article>
+          `).join('')}
+        </div>
+      </div>`;
+      },
+
+      renderCard(card, pool) {
+        const m = GAME_META[card.game];
+        const sorted = [...pool].sort((a, b) => a.game_id - b.game_id);
+        const idx = sorted.findIndex(c => c.game_id === card.game_id);
+        const prev = sorted[idx - 1];
+        const next = sorted[idx + 1];
+
+        document.documentElement.style.setProperty('--active-c', m.c);
+        document.documentElement.style.setProperty('--active-g', m.g);
+        document.title = `${card.name} – ${m.short}`;
+
+        const rarityHtml = card.rarity
+          ? `<div class="rarity-badge ${card.rarity.toLowerCase()}">${esc(card.rarity)}</div>`
+          : '';
+
+        const descHtml = card.description
+          ? `<p class="card-desc">${esc(card.description)}</p>`
+          : '';
+
+        const locHtml = card.location ? `
+      <div class="card-loc">
+        <span class="loc-label">Where to find</span>
+        <p class="loc-text">${esc(card.location)}</p>
+      </div>` : '';
+
+        const navPrev = prev ? `
+      <a class="nav-btn prev" data-link="/${m.slug}/${prev.game_id}">
+        <span class="nav-dir">← Previous</span>
+        <span class="nav-name">${esc(prev.name)}</span>
+      </a>` : '<span></span>';
+
+        const navNext = next ? `
+      <a class="nav-btn next" data-link="/${m.slug}/${next.game_id}">
+        <span class="nav-dir">Next →</span>
+        <span class="nav-name">${esc(next.name)}</span>
+      </a>` : '<span></span>';
+
+        document.getElementById('app').innerHTML = `
+      <div class="page">
+        <div class="card-topbar">
+          <nav class="breadcrumb">
+            <a data-link="/">Collection</a>
+            <span class="breadcrumb-sep">›</span>
+            <a data-link="/${m.slug}/random">${esc(m.short)}</a>
+            <span class="breadcrumb-sep">›</span>
+            <span>${esc(card.name)}</span>
+          </nav>
+          <a class="btn-rnd" data-link="/${m.slug}/random">✦ Draw Random</a>
+        </div>
+
+        <div class="card-layout">
+          <div class="card-img-zone">
+            <div class="card-glow"></div>
+            <div class="card-img-wrap">
+              <img class="card-img"
+                   src="/${esc(card.image_local)}"
+                   alt="${esc(card.name)}"
+                   loading="eager">
+            </div>
+            ${rarityHtml}
+          </div>
+
+          <div class="card-details">
+            <p class="card-meta-line">${esc(m.roman)} &nbsp;·&nbsp; No.&nbsp;${card.game_id}</p>
+            <h1 class="card-name">${esc(card.name)}</h1>
+            ${card.dates ? `<p class="card-dates">${esc(card.dates)}</p>` : ''}
+            <div class="rule"></div>
+            ${descHtml}
+            ${locHtml}
+            <div class="card-actions">
+              <a class="btn-primary" data-link="/${m.slug}/random">Draw Another</a>
+              <a class="btn-ghost"   data-link="/">All Games</a>
+            </div>
+            <div class="card-nav">
+              ${navPrev}
+              ${navNext}
+            </div>
+          </div>
+        </div>
+      </div>`;
+      },
+    };
+
+    App.init().catch(err => {
+      document.getElementById('app').innerHTML =
+        `<div class="loading">Failed to load card data.</div>`;
+      console.error(err);
+    });
+  </script>
+</body>
+
+</html>
