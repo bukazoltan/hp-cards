@@ -435,22 +435,56 @@
       }
     }
 
-    /* Shimmer sweep on hover */
-    .card-img-wrap::after {
+    /* 3-D tilt container */
+    .card-img-wrap {
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform .08s linear;
+    }
+
+    /* Specular highlight layer */
+    .card-img-wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: 2px;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255,255,255,.18) 0%,
+        rgba(255,255,255,.04) 40%,
+        transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+
+    .card-img-wrap:hover::before {
+      opacity: 1;
+    }
+
+    /* Holographic shimmer (rarity cards) */
+    .card-img-wrap.holo::after {
       content: '';
       position: absolute;
       inset: 0;
       z-index: 2;
-      background: linear-gradient(108deg, transparent 35%, rgba(255, 255, 255, .07) 50%, transparent 65%);
-      opacity: 0;
-      transition: opacity .3s, transform .5s;
-      transform: translateX(-30px);
+      border-radius: 2px;
+      background: linear-gradient(
+        calc(var(--holo-angle, 135deg)),
+        transparent 20%,
+        rgba(255,200,100,.08) 30%,
+        rgba(100,255,200,.10) 40%,
+        rgba(100,150,255,.10) 50%,
+        rgba(200,100,255,.08) 60%,
+        transparent 70%
+      );
       pointer-events: none;
+      opacity: 0;
+      transition: opacity .25s;
     }
 
-    .card-img-wrap:hover::after {
+    .card-img-wrap.holo:hover::after {
       opacity: 1;
-      transform: translateX(30px);
     }
 
     .card-img {
@@ -1466,7 +1500,7 @@
         <div class="card-layout">
           <div class="card-img-zone">
             <div class="card-glow"></div>
-            <div class="card-img-wrap">
+            <div class="card-img-wrap${card.rarity ? ' holo' : ''}">
               <img class="card-img"
                    src="/${esc(card.image_local)}"
                    alt="${esc(card.name)}"
@@ -1493,6 +1527,35 @@
           </div>
         </div>
       </div>`;
+
+        // 3D tilt on mouse move
+        const wrap = document.querySelector('.card-img-wrap');
+        if (!wrap) return;
+
+        // Clear the entry animation so it stops overriding inline transform
+        wrap.addEventListener('animationend', () => {
+          wrap.style.animation = 'none';
+        }, { once: true });
+
+        const TILT = 28; // max degrees
+
+        wrap.addEventListener('mousemove', e => {
+          const r = wrap.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width;   // 0→1
+          const y = (e.clientY - r.top)  / r.height;  // 0→1
+          const rx = (y - .5) * -TILT * 2;  // rotateX
+          const ry = (x - .5) *  TILT * 2;  // rotateY
+          const angle = Math.atan2(y - .5, x - .5) * (180 / Math.PI) + 90;
+          wrap.style.transform =
+            `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.03)`;
+          wrap.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
+          wrap.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
+          wrap.style.setProperty('--holo-angle', `${angle.toFixed(1)}deg`);
+        });
+
+        wrap.addEventListener('mouseleave', () => {
+          wrap.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)';
+        });
       },
     };
 
