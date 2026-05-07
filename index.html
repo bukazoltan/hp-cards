@@ -1216,6 +1216,16 @@
       async init() {
         this.cards = await fetch('/cards.json').then(r => r.json());
 
+        // Preload all card images in the background after initial render
+        requestIdleCallback(() => {
+          for (const card of this.cards) {
+            if (card.image_local) {
+              const img = new Image();
+              img.src = '/' + card.image_local;
+            }
+          }
+        }, { timeout: 3000 });
+
         document.addEventListener('click', e => {
           const el = e.target.closest('[data-link]');
           if (!el) return;
