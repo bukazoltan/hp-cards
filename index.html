@@ -1331,7 +1331,9 @@
         const cardHtml = (card, m) => `
       <div class="shared-card ${m.slug}">
         <p class="shared-game-label">${m.roman} · ${esc(m.short)}</p>
-        <img class="shared-img" src="/${esc(card.image_local)}" alt="${esc(card.name)}">
+        <div class="card-img-wrap${card.rarity ? ' holo' : ''}" style="width:fit-content;margin:0 auto 1rem">
+          <img class="shared-img" src="/${esc(card.image_local)}" alt="${esc(card.name)}" style="margin:0">
+        </div>
         ${card.rarity ? `<div class="shared-rarity ${card.rarity.toLowerCase()}">${esc(card.rarity)}</div>` : ''}
         ${card.location ? `
           <div class="shared-loc">
@@ -1367,6 +1369,8 @@
 
         <a class="btn-redraw" data-link="/shared/random">✦ Draw Another</a>
       </div>`;
+
+        document.querySelectorAll('.shared-card .card-img-wrap').forEach(initTilt);
       },
 
       renderTriple() {
@@ -1384,7 +1388,9 @@
         const cardHtml = (card, m) => `
       <div class="triple-card ${m.slug}">
         <p class="triple-game-label">${m.roman} · ${esc(m.short)}</p>
-        <img class="triple-img" src="/${esc(card.image_local)}" alt="${esc(card.name)}">
+        <div class="card-img-wrap${card.rarity ? ' holo' : ''}" style="width:fit-content;margin:0 auto 1.25rem">
+          <img class="triple-img" src="/${esc(card.image_local)}" alt="${esc(card.name)}" style="margin:0">
+        </div>
         <p class="triple-card-name">${esc(card.name)}</p>
         ${card.dates ? `<p class="triple-card-dates">${esc(card.dates)}</p>` : ''}
         ${card.location ? `
@@ -1421,6 +1427,8 @@
 
         <a class="btn-redraw" data-link="/random">✦ Draw Again</a>
       </div>`;
+
+        document.querySelectorAll('.triple-card .card-img-wrap').forEach(initTilt);
       },
 
       renderHome() {
@@ -1541,46 +1549,36 @@
         </div>
       </div>`;
 
-        // 3D tilt on mouse move
-        const wrap = document.querySelector('.card-img-wrap');
-        if (!wrap) return;
-
-        // Holographic overlay masked to card image shape
-        if (card.rarity) {
-          const holoDiv = document.createElement('div');
-          holoDiv.className = 'holo-overlay';
-          const imgSrc = `/${card.image_local}`;
-          holoDiv.style.webkitMaskImage = `url("${imgSrc}")`;
-          holoDiv.style.maskImage = `url("${imgSrc}")`;
-          wrap.appendChild(holoDiv);
-        }
-
-        // Clear the entry animation so it stops overriding inline transform
-        wrap.addEventListener('animationend', () => {
-          wrap.style.animation = 'none';
-        }, { once: true });
-
-        const TILT = 28; // max degrees
-
-        wrap.addEventListener('mousemove', e => {
-          const r = wrap.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width;   // 0→1
-          const y = (e.clientY - r.top)  / r.height;  // 0→1
-          const rx = (y - .5) * -TILT * 2;  // rotateX
-          const ry = (x - .5) *  TILT * 2;  // rotateY
-          const angle = Math.atan2(y - .5, x - .5) * (180 / Math.PI) + 90;
-          wrap.style.transform =
-            `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.03)`;
-          wrap.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
-          wrap.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
-          wrap.style.setProperty('--holo-angle', `${angle.toFixed(1)}deg`);
-        });
-
-        wrap.addEventListener('mouseleave', () => {
-          wrap.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)';
-        });
+        initTilt(document.querySelector('.card-img-wrap'));
       },
     };
+
+    function initTilt(wrap) {
+      if (!wrap) return;
+      const TILT = 28;
+
+      wrap.addEventListener('animationend', () => {
+        wrap.style.animation = 'none';
+      }, { once: true });
+
+      wrap.addEventListener('mousemove', e => {
+        const r = wrap.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top)  / r.height;
+        const rx = (y - .5) * -TILT * 2;
+        const ry = (x - .5) *  TILT * 2;
+        const angle = Math.atan2(y - .5, x - .5) * (180 / Math.PI) + 90;
+        wrap.style.transform =
+          `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.03)`;
+        wrap.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
+        wrap.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
+        wrap.style.setProperty('--holo-angle', `${angle.toFixed(1)}deg`);
+      });
+
+      wrap.addEventListener('mouseleave', () => {
+        wrap.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)';
+      });
+    }
 
     App.init().catch(err => {
       document.getElementById('app').innerHTML =
