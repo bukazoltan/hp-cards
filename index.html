@@ -87,7 +87,6 @@
       max-width: 1160px;
       margin: 0 auto;
       padding: 0 2rem;
-      min-height: 100vh;
     }
 
     /* ── Utilities ────────────────────────────────── */
@@ -169,7 +168,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
       gap: 1.5rem;
-      padding-bottom: 6rem;
+      padding-bottom: 1.5rem;
     }
 
     .game-panel {
@@ -1112,6 +1111,32 @@
       }
     }
 
+    /* ── Footer ──────────────────────────────────── */
+    .site-footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 1.5rem 2rem;
+      font-family: 'Cinzel', serif;
+      font-size: .62rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      max-width: 1160px;
+      margin: 0 auto;
+    }
+
+    .site-footer a {
+      color: var(--gold-dim);
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .site-footer a:hover {
+      color: var(--gold);
+    }
+
     /* ── Scrollbar ────────────────────────────────── */
     ::-webkit-scrollbar {
       width: 5px;
@@ -1143,6 +1168,9 @@
   <div id="app">
     <div class="loading">Unpacking wizard cards…</div>
   </div>
+  <footer class="site-footer">
+    Card images sourced from <a href="https://hp-games.net" target="_blank" rel="noopener">hp-games.net</a>
+  </footer>
 
   <script>
     /* ── Theme ────────────────────────────────────────────────────────────────── */
