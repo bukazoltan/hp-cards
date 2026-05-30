@@ -5,6 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Famous Witches & Wizards – HP PC Cards</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+  <meta name="description" content="Browse all 206 Famous Witches &amp; Wizards cards from the Harry Potter PC game trilogy (2001–2004). Includes HP1, HP2, and HP3 collections with card art, bios, and rarity tiers.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="HP PC Cards">
+  <meta property="og:title" content="Famous Witches &amp; Wizards – HP PC Cards">
+  <meta property="og:description" content="Browse all 206 wizard cards from the Harry Potter PC game trilogy (2001–2004).">
+  <meta property="og:url" content="https://hp-cards.netlify.app">
+  <meta property="og:image" content="https://hp-cards.netlify.app/images/game-selector/hp2.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Famous Witches &amp; Wizards – HP PC Cards">
+  <meta name="twitter:description" content="Browse all 206 wizard cards from the Harry Potter PC game trilogy (2001–2004).">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -1145,6 +1156,23 @@
       color: var(--gold);
     }
 
+    /* ── Keyboard hint ───────────────────────────────────────────── */
+    .key-hint {
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: .55rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: .9rem;
+      opacity: .65;
+    }
+
+    .card-img.error {
+      opacity: .22;
+      filter: grayscale(1);
+    }
+
     /* ── Scrollbar ────────────────────────────────── */
     ::-webkit-scrollbar {
       width: 5px;
@@ -1259,6 +1287,7 @@
     /* ── App ──────────────────────────────────────────────────────────────────── */
     const App = {
       cards: null,
+      keyNav: null,
 
       async init() {
         this.cards = await fetch('/cards.json').then(r => r.json());
@@ -1281,6 +1310,14 @@
         });
 
         window.addEventListener('popstate', () => this.route());
+        document.addEventListener('keydown', e => {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.metaKey || e.ctrlKey) return;
+          const kn = this.keyNav;
+          if (!kn) return;
+          if (e.key === 'ArrowLeft'  && kn.prev)   { e.preventDefault(); this.go(kn.prev); }
+          if (e.key === 'ArrowRight' && kn.next)   { e.preventDefault(); this.go(kn.next); }
+          if ((e.key === 'r' || e.key === 'R') && kn.random) this.go(kn.random);
+        });
         this.route();
       },
 
@@ -1313,6 +1350,7 @@
       },
 
       renderShared() {
+        this.keyNav = null;
         document.documentElement.style.removeProperty('--active-c');
         document.documentElement.style.removeProperty('--active-g');
         document.title = 'Same Card, Three Games – HP PC Cards';
@@ -1374,6 +1412,7 @@
       },
 
       renderTriple() {
+        this.keyNav = null;
         document.documentElement.style.removeProperty('--active-c');
         document.documentElement.style.removeProperty('--active-g');
         document.title = 'Draw Three – HP PC Cards';
@@ -1432,6 +1471,7 @@
       },
 
       renderHome() {
+        this.keyNav = null;
         document.documentElement.style.removeProperty('--active-c');
         document.documentElement.style.removeProperty('--active-g');
         document.title = 'Famous Witches & Wizards – HP PC Cards';
@@ -1474,6 +1514,12 @@
         const idx = sorted.findIndex(c => c.game_id === card.game_id);
         const prev = sorted[idx - 1];
         const next = sorted[idx + 1];
+
+        this.keyNav = {
+          prev:   prev ? `/${m.slug}/${prev.game_id}` : null,
+          next:   next ? `/${m.slug}/${next.game_id}` : null,
+          random: `/${m.slug}/random`,
+        };
 
         document.documentElement.style.setProperty('--active-c', m.c);
         document.documentElement.style.setProperty('--active-g', m.g);
@@ -1531,7 +1577,7 @@
           </div>
 
           <div class="card-details">
-            <p class="card-meta-line">${esc(m.roman)} &nbsp;·&nbsp; No.&nbsp;${card.game_id}</p>
+            <p class="card-meta-line">${esc(m.roman)} &nbsp;·&nbsp; No.&nbsp;${card.game_id} &nbsp;·&nbsp; ${idx + 1}&thinsp;/&thinsp;${sorted.length}</p>
             <h1 class="card-name">${esc(card.name)}</h1>
             ${card.dates ? `<p class="card-dates">${esc(card.dates)}</p>` : ''}
             <div class="rule"></div>
@@ -1545,11 +1591,14 @@
               ${navPrev}
               ${navNext}
             </div>
+            <p class="key-hint">← → navigate &nbsp;·&nbsp; R random</p>
           </div>
         </div>
       </div>`;
 
         initTilt(document.querySelector('.card-img-wrap'));
+        const img = document.querySelector('.card-img');
+        if (img) img.addEventListener('error', () => img.classList.add('error'), { once: true });
       },
     };
 
