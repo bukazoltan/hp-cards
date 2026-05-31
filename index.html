@@ -234,7 +234,7 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      filter: grayscale(.9) brightness(.12);
+      filter: grayscale(.4) brightness(.32);
     }
 
     .game-panel.hp1::after { background-image: url('/images/game-selector/hp1.jpg'); }
@@ -1047,11 +1047,20 @@
 
 
     [data-theme="light"] .game-panel::before {
-      opacity: 0 !important;
+      opacity: 0;
+    }
+
+    [data-theme="light"] .game-panel:hover::before {
+      opacity: 1;
+    }
+
+    [data-theme="light"] .game-panel::after {
+      filter: grayscale(.15) brightness(1.1);
+      opacity: .2;
     }
 
     [data-theme="light"] .game-panel:hover {
-      box-shadow: 0 8px 32px rgba(90, 55, 8, .15);
+      box-shadow: 0 12px 40px rgba(90, 55, 8, .22);
     }
 
     [data-theme="light"] .card-loc {
@@ -1297,8 +1306,8 @@
         const light = Theme.isLight();
         // Dark: pale gold stars. Light: soft warm dust motes at low opacity.
         const [r, g, b] = light ? [140, 95, 30] : [210, 188, 138];
-        const maxA = light ? .18 : .77;
-        const minA = light ? .03 : .12;
+        const maxA = light ? .32 : .77;
+        const minA = light ? .08 : .12;
         for (const s of stars) {
           const a = ((Math.sin(t * s.speed + s.phase) + 1) / 2) * (maxA - minA) + minA;
           ctx.beginPath();
