@@ -1165,7 +1165,6 @@
       text-transform: uppercase;
       color: var(--text-muted);
       margin-top: .9rem;
-      opacity: .65;
     }
 
     .card-img.error {
@@ -1186,12 +1185,54 @@
       background: var(--gold-dim);
       border-radius: 2px;
     }
+
+    /* ── Accessibility ────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    .github-link:focus-visible,
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 1rem;
+      z-index: 9999;
+      padding: .6rem 1.2rem;
+      background: var(--gold);
+      color: var(--bg);
+      font-family: 'Cinzel', serif;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: top .15s;
+    }
+
+    .skip-link:focus-visible {
+      top: .5rem;
+      outline: 2px solid var(--bg);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page { animation: none; }
+      * { transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 
 <body>
 
-  <canvas id="starfield"></canvas>
+  <a href="#app" class="skip-link">Skip to main content</a>
+  <canvas id="starfield" aria-hidden="true"></canvas>
   <nav class="site-nav">
     <a class="github-link" href="https://github.com/bukazoltan/hp-cards" target="_blank" rel="noopener" aria-label="View on GitHub">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -1201,9 +1242,9 @@
       <span class="toggle-icon">☀</span><span class="toggle-label">Light</span>
     </button>
   </nav>
-  <div id="app">
+  <main id="app">
     <div class="loading">Unpacking wizard cards…</div>
-  </div>
+  </main>
   <footer class="site-footer">
     Card images sourced from <a href="https://hp-games.net" target="_blank" rel="noopener">hp-games.net</a>
   </footer>
@@ -1223,6 +1264,7 @@
         const btn = document.getElementById('theme-toggle');
         btn.querySelector('.toggle-icon').textContent = t === 'light' ? '☽' : '☀';
         btn.querySelector('.toggle-label').textContent = t === 'light' ? 'Dark' : 'Light';
+        btn.setAttribute('aria-label', t === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
         if (save) localStorage.setItem('theme', t);
       },
       isLight() { return document.documentElement.dataset.theme === 'light'; },
@@ -1378,25 +1420,25 @@
             <strong>Where to find</strong>
             ${esc(card.location)}
           </div>` : ''}
-        <a class="shared-view-link" data-link="/${m.slug}/${card.game_id}">View full card →</a>
+        <a href="/${m.slug}/${card.game_id}" class="shared-view-link" data-link="/${m.slug}/${card.game_id}">View full card →</a>
       </div>`;
 
         document.getElementById('app').innerHTML = `
       <div class="page">
         <div class="card-topbar">
-          <nav class="breadcrumb">
-            <a data-link="/">Collection</a>
-            <span class="breadcrumb-sep">›</span>
-            <span>Same Card, Three Games</span>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="/" data-link="/">Collection</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span aria-current="page">Same Card, Three Games</span>
           </nav>
-          <a class="btn-rnd" data-link="/shared/random">✦ Draw Another</a>
+          <a href="/shared/random" class="btn-rnd" data-link="/shared/random">✦ Draw Another</a>
         </div>
 
         <header class="shared-hero">
-          <div class="ornament">✦</div>
+          <div class="ornament" aria-hidden="true">✦</div>
           <h1 class="shared-name">${esc(name)}</h1>
           <p class="shared-sub">Same wizard · Three games</p>
-          <div class="ornament" style="margin-top:1.2rem">✦</div>
+          <div class="ornament" aria-hidden="true" style="margin-top:1.2rem">✦</div>
         </header>
 
         <div class="shared-grid">
@@ -1405,7 +1447,7 @@
           ${cardHtml(group.HP3, GAME_META.HP3)}
         </div>
 
-        <a class="btn-redraw" data-link="/shared/random">✦ Draw Another</a>
+        <a href="/shared/random" class="btn-redraw" data-link="/shared/random">✦ Draw Another</a>
       </div>`;
 
         document.querySelectorAll('.shared-card .card-img-wrap').forEach(initTilt);
@@ -1437,25 +1479,25 @@
             <strong>Where to find</strong>
             ${esc(card.location)}
           </div>` : ''}
-        <a class="triple-view-link" data-link="/${m.slug}/${card.game_id}">View full card →</a>
+        <a href="/${m.slug}/${card.game_id}" class="triple-view-link" data-link="/${m.slug}/${card.game_id}">View full card →</a>
       </div>`;
 
         document.getElementById('app').innerHTML = `
       <div class="page">
         <div class="card-topbar">
-          <nav class="breadcrumb">
-            <a data-link="/">Collection</a>
-            <span class="breadcrumb-sep">›</span>
-            <span>Draw Three</span>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="/" data-link="/">Collection</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span aria-current="page">Draw Three</span>
           </nav>
-          <a class="btn-rnd" data-link="/random">✦ Redraw All</a>
+          <a href="/random" class="btn-rnd" data-link="/random">✦ Redraw All</a>
         </div>
 
         <header class="triple-header">
-          <div class="ornament">✦</div>
+          <div class="ornament" aria-hidden="true">✦</div>
           <h1 class="triple-title" style="margin: 1.2rem 0 .5rem">Draw Three</h1>
           <p class="triple-sub">One card from each game</p>
-          <div class="ornament" style="margin-top:1.2rem">✦</div>
+          <div class="ornament" aria-hidden="true" style="margin-top:1.2rem">✦</div>
         </header>
 
         <div class="triple-grid">
@@ -1464,7 +1506,7 @@
           ${cardHtml(cards.HP3, GAME_META.HP3)}
         </div>
 
-        <a class="btn-redraw" data-link="/random">✦ Draw Again</a>
+        <a href="/random" class="btn-redraw" data-link="/random">✦ Draw Again</a>
       </div>`;
 
         document.querySelectorAll('.triple-card .card-img-wrap').forEach(initTilt);
@@ -1483,13 +1525,13 @@
         document.getElementById('app').innerHTML = `
       <div class="page">
         <header class="home-header">
-          <div class="ornament">✦</div>
+          <div class="ornament" aria-hidden="true">✦</div>
           <h1 class="home-title">Famous Witches<br>&amp; Wizards</h1>
           <p class="home-sub">Harry Potter · PC Collection · 2001–2004</p>
-          <div class="ornament" style="margin-bottom:1.5rem">✦</div>
+          <div class="ornament" aria-hidden="true" style="margin-bottom:1.5rem">✦</div>
           <div style="display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
-            <a class="btn-draw btn-hero" data-link="/random">✦ &nbsp;Draw One from Each Game</a>
-            <a class="btn-draw btn-hero" data-link="/shared/random">✦ &nbsp;Same Card, Three Games</a>
+            <a href="/random" class="btn-draw btn-hero" data-link="/random">✦ &nbsp;Draw One from Each Game</a>
+            <a href="/shared/random" class="btn-draw btn-hero" data-link="/shared/random">✦ &nbsp;Same Card, Three Games</a>
           </div>
         </header>
 
@@ -1501,7 +1543,7 @@
               <p class="panel-year">${m.year} &nbsp;·&nbsp; PC</p>
               <div class="panel-count">${counts[g]}</div>
               <p class="panel-count-label">Wizard Cards</p>
-              <a class="btn-draw" data-link="/${m.slug}/random">Draw a Card</a>
+              <a href="/${m.slug}/random" class="btn-draw" data-link="/${m.slug}/random">Draw a Card</a>
             </article>
           `).join('')}
         </div>
@@ -1540,13 +1582,13 @@
       </div>` : '';
 
         const navPrev = prev ? `
-      <a class="nav-btn prev" data-link="/${m.slug}/${prev.game_id}">
+      <a href="/${m.slug}/${prev.game_id}" class="nav-btn prev" data-link="/${m.slug}/${prev.game_id}">
         <span class="nav-dir">← Previous</span>
         <span class="nav-name">${esc(prev.name)}</span>
       </a>` : '<span></span>';
 
         const navNext = next ? `
-      <a class="nav-btn next" data-link="/${m.slug}/${next.game_id}">
+      <a href="/${m.slug}/${next.game_id}" class="nav-btn next" data-link="/${m.slug}/${next.game_id}">
         <span class="nav-dir">Next →</span>
         <span class="nav-name">${esc(next.name)}</span>
       </a>` : '<span></span>';
@@ -1554,14 +1596,14 @@
         document.getElementById('app').innerHTML = `
       <div class="page">
         <div class="card-topbar">
-          <nav class="breadcrumb">
-            <a data-link="/">Collection</a>
-            <span class="breadcrumb-sep">›</span>
-            <a data-link="/${m.slug}/random">${esc(m.short)}</a>
-            <span class="breadcrumb-sep">›</span>
-            <span>${esc(card.name)}</span>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="/" data-link="/">Collection</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <a href="/${m.slug}/random" data-link="/${m.slug}/random">${esc(m.short)}</a>
+            <span class="breadcrumb-sep" aria-hidden="true">›</span>
+            <span aria-current="page">${esc(card.name)}</span>
           </nav>
-          <a class="btn-rnd" data-link="/${m.slug}/random">✦ Draw Random</a>
+          <a href="/${m.slug}/random" class="btn-rnd" data-link="/${m.slug}/random">✦ Draw Random</a>
         </div>
 
         <div class="card-layout">
@@ -1584,8 +1626,8 @@
             ${descHtml}
             ${locHtml}
             <div class="card-actions">
-              <a class="btn-primary" data-link="/${m.slug}/random">Draw Another</a>
-              <a class="btn-ghost"   data-link="/">All Games</a>
+              <a href="/${m.slug}/random" class="btn-primary" data-link="/${m.slug}/random">Draw Another</a>
+              <a href="/" class="btn-ghost" data-link="/">All Games</a>
             </div>
             <div class="card-nav">
               ${navPrev}
