@@ -42,6 +42,25 @@
       --active-g: var(--g-hp1);
     }
 
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f2ead8;
+        --bg-panel: #e5d9c0;
+        --gold: #7a5e18;
+        --gold-dim: #5c4610;
+        --gold-light: #3e2e08;
+        --text: #1e1408;
+        --text-dim: #4a3418;
+        --text-muted: #6a5030;
+        --border: rgba(107, 70, 8, .25);
+        --border-hi: rgba(107, 70, 8, .55);
+      }
+
+      #starfield { display: none; }
+
+      body::after { opacity: .06; }
+    }
+
     html {
       height: 100%;
       scroll-behavior: smooth;
