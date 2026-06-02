@@ -1262,7 +1262,8 @@
     /* ── Theme ────────────────────────────────────────────────────────────────── */
     const Theme = {
       init() {
-        const saved = localStorage.getItem('theme') || 'dark';
+        const osPref = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        const saved = localStorage.getItem('theme') || osPref;
         this.set(saved, false);
         document.getElementById('theme-toggle').addEventListener('click', () => {
           this.set(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
