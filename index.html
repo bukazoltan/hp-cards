@@ -1684,7 +1684,7 @@
 
     App.init().catch(err => {
       document.getElementById('app').innerHTML =
-        `<div class="loading">Failed to load card data.</div>`;
+        `<div class="loading">Failed to load card data.<br><small>${esc((err && (err.stack || err.message)) || err)}</small></div>`;
       console.error(err);
     });
   </script>
