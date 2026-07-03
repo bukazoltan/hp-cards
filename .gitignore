@@ -1,0 +1,8 @@
+.netlify/*
+scrape.py
+.netlify/state.json
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+.vscode/
