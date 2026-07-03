@@ -93,8 +93,18 @@ export function renderBrowse(cards, game) {
     grid.querySelectorAll('[data-fav-idx]').forEach(btn => {
       const card = list[Number(btn.dataset.favIdx)];
       btn.addEventListener('click', () => {
-        Collection.toggle(card);
-        renderGrid();
+        const isNowCollected = Collection.toggle(card);
+        // Only re-render the whole grid when the "collected only" filter
+        // needs the card to actually disappear — otherwise just update
+        // this one button, so the other thumbnails' image-reveal/glow
+        // animations don't replay and make everything appear to reload.
+        if (state.collected && !isNowCollected) {
+          renderGrid();
+          return;
+        }
+        btn.classList.toggle('active', isNowCollected);
+        btn.setAttribute('aria-pressed', String(isNowCollected));
+        btn.setAttribute('aria-label', `${isNowCollected ? 'Remove from' : 'Add to'} my collection`);
       });
     });
   }

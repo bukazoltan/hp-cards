@@ -67,6 +67,25 @@ test('browse page: search, rarity filter, sort, and favorites all compose', asyn
   await expect(page).toHaveURL(/collected=true/);
 });
 
+test('favoriting a card does not rebuild other thumbnails in the grid', async ({ page }) => {
+  await page.goto('/hp2/browse');
+  await expect(page.locator('.browse-thumb').first()).toBeVisible();
+
+  // Tag a DOM node on an untouched thumbnail; if the grid gets rebuilt,
+  // this marker is lost even though the visible content looks the same.
+  await page.evaluate(() => {
+    document.querySelectorAll('.browse-thumb-img')[4].dataset.marker = 'untouched';
+  });
+
+  await page.click('.browse-fav-btn >> nth=2');
+
+  const preserved = await page.evaluate(() => {
+    const img = document.querySelectorAll('.browse-thumb-img')[4];
+    return img?.dataset.marker === 'untouched';
+  });
+  expect(preserved).toBe(true);
+});
+
 test('favoriting a card on the card page persists across navigation', async ({ page }) => {
   await page.goto('/hp2/1');
   await page.click('#collect-toggle');
