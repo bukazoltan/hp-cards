@@ -1345,7 +1345,8 @@
         this.cards = await fetch('/cards.json').then(r => r.json());
 
         // Preload all card images in the background after initial render
-        requestIdleCallback(() => {
+        const idle = window.requestIdleCallback || (cb => setTimeout(cb, 200));
+        idle(() => {
           for (const card of this.cards) {
             if (card.image_local) {
               const img = new Image();
