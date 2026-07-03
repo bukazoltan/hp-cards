@@ -20,7 +20,10 @@ A static single-page app displaying the collectible wizard cards from the Harry 
 
 ```
 hp-cards/
-├── index.html      # Single-file SPA (routing, CSS, JS)
+├── index.html      # App shell: head meta/OG tags + body skeleton
+├── css/            # base.css (theme/reset) + components.css (page styles)
+├── js/             # ES modules: router, views, card rendering, theme, etc.
+├── test/           # node --test unit tests for the pure logic (router, data, util)
 ├── cards.json      # Scraped card data (206 cards)
 ├── _redirects      # Netlify SPA routing rule
 └── images/
@@ -28,6 +31,16 @@ hp-cards/
     ├── hp2/        # Chamber of Secrets card images
     └── hp3/        # Prisoner of Azkaban card images (by category subfolder)
 ```
+
+No build step or bundler — `index.html` loads `js/app.js` as a native ES module (`<script type="module">`), and CSS/JS are served as plain static files.
+
+## Tests
+
+```
+node --test
+```
+
+Runs the unit tests in `test/` (Node's built-in test runner, no dependencies).
 
 ## Deployment
 
