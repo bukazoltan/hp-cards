@@ -30,6 +30,7 @@ export function renderCollection(cards) {
           <div class="ornament" aria-hidden="true">✦</div>
           <h1 class="browse-title" tabindex="-1">My Collection</h1>
           <p class="browse-sub" id="collection-count"></p>
+          <p class="collection-note">Saved locally in this browser only — not synced to an account, and cleared if you clear your browser data.</p>
         </header>
 
         <div class="browse-controls">
