@@ -1,5 +1,6 @@
 import { esc } from '../util.js';
 import { GAME_META } from '../data.js';
+import { Collection } from '../collection.js';
 
 export function renderHome(cards) {
   document.documentElement.style.removeProperty('--active-c');
@@ -9,6 +10,8 @@ export function renderHome(cards) {
   const counts = {};
   for (const g of Object.keys(GAME_META))
     counts[g] = cards.filter(c => c.game === g).length;
+
+  const collectedCount = cards.filter(c => Collection.has(c)).length;
 
   document.getElementById('app').innerHTML = `
       <div class="page">
@@ -20,6 +23,7 @@ export function renderHome(cards) {
           <div style="display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
             <a href="/random" class="btn-draw btn-hero" data-link="/random">✦ &nbsp;Draw One from Each Game</a>
             <a href="/shared/random" class="btn-draw btn-hero" data-link="/shared/random">✦ &nbsp;Same Card, Three Games</a>
+            <a href="/collection" class="btn-draw btn-hero" data-link="/collection">★ &nbsp;My Collection${collectedCount ? ` (${collectedCount})` : ''}</a>
           </div>
         </header>
 

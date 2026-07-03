@@ -94,12 +94,15 @@ export function renderBrowse(cards, game) {
       const card = list[Number(btn.dataset.favIdx)];
       btn.addEventListener('click', () => {
         const isNowCollected = Collection.toggle(card);
-        // Only re-render the whole grid when the "collected only" filter
-        // needs the card to actually disappear — otherwise just update
-        // this one button, so the other thumbnails' image-reveal/glow
-        // animations don't replay and make everything appear to reload.
+        // Only remove this one card when the "collected only" filter needs
+        // it to disappear — never re-render the whole grid, so the other
+        // thumbnails' image-reveal/glow animations don't replay and make
+        // everything appear to reload.
         if (state.collected && !isNowCollected) {
-          renderGrid();
+          btn.closest('.browse-thumb').remove();
+          if (!grid.querySelector('.browse-thumb')) {
+            grid.innerHTML = `<p class="browse-empty">No cards match your filters.</p>`;
+          }
           return;
         }
         btn.classList.toggle('active', isNowCollected);

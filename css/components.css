@@ -1137,6 +1137,15 @@
   margin-top: .6rem;
 }
 
+.browse-thumb-game {
+  font-family: 'Cinzel', serif;
+  font-size: .6rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: .3rem;
+}
+
 .browse-fav-btn {
   position: absolute;
   top: .5rem;

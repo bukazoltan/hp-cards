@@ -94,3 +94,27 @@ test('favoriting a card on the card page persists across navigation', async ({ p
   await page.goto('/hp2/browse?collected=true');
   await expect(page.locator('.browse-thumb')).toHaveCount(1);
 });
+
+test('My Collection page shows favorites from all three games at once', async ({ page }) => {
+  for (const [slug, id] of [['hp1', 1], ['hp2', 1], ['hp3', 1]]) {
+    await page.goto(`/${slug}/${id}`);
+    await page.click('#collect-toggle');
+  }
+
+  await page.goto('/');
+  await expect(page.locator('a[data-link="/collection"]')).toContainText('My Collection (3)');
+  await page.click('a[data-link="/collection"]');
+  await expect(page).toHaveURL(/\/collection$/);
+  await expect(page.locator('.browse-thumb')).toHaveCount(3);
+
+  await page.click('.rarity-chip[data-game="HP2"]');
+  await expect(page.locator('.browse-thumb')).toHaveCount(1);
+  await expect(page.locator('.browse-thumb-game')).toHaveText('Game II');
+
+  await page.click('.rarity-chip[data-game=""]');
+  await expect(page.locator('.browse-thumb')).toHaveCount(3);
+
+  // Removing one card here should only remove that one thumbnail.
+  await page.click('.browse-fav-btn >> nth=0');
+  await expect(page.locator('.browse-thumb')).toHaveCount(2);
+});
