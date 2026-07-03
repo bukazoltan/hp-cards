@@ -8,7 +8,7 @@ export default defineConfig({
     baseURL: 'http://localhost:8888',
   },
   webServer: {
-    command: 'netlify dev --port 8888 -o false',
+    command: 'npx netlify dev --port 8888 -o false',
     url: 'http://localhost:8888',
     reuseExistingServer: true,
     timeout: 60000,
