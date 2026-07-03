@@ -7,6 +7,7 @@ export function parseRoute(pathname, knownGames = Object.keys(GAME_META)) {
   if (gameSlug === 'random') return { kind: 'triple' };
   if (gameSlug === 'shared') return { kind: 'shared' };
   if (!gameSlug || !knownGames.includes(game)) return { kind: 'home' };
+  if (rawId === 'browse') return { kind: 'browse', gameSlug, game };
   return { kind: 'card', gameSlug, game, rawId: rawId || null };
 }
 
@@ -30,6 +31,8 @@ export function createRouter({ cards, views }) {
         result = views.shared(cards);
       } else if (parsed.kind === 'home') {
         result = views.home(cards);
+      } else if (parsed.kind === 'browse') {
+        result = views.browse(cards, parsed.game);
       } else {
         const pool = cards.filter(c => c.game === parsed.game);
         if (!parsed.rawId || parsed.rawId === 'random') {

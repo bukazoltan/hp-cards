@@ -32,6 +32,7 @@ export function renderHome(cards) {
               <div class="panel-count">${counts[g]}</div>
               <p class="panel-count-label">Wizard Cards</p>
               <a href="/${m.slug}/random" class="btn-draw" data-link="/${m.slug}/random">Draw a Card</a>
+              <a href="/${m.slug}/browse" class="panel-browse-link" data-link="/${m.slug}/browse">Browse all →</a>
             </article>
           `).join('')}
         </div>

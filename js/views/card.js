@@ -2,6 +2,7 @@ import { esc } from '../util.js';
 import { GAME_META } from '../data.js';
 import { imageWrap, rarityBadge, locationDetail } from '../card-view.js';
 import { initTilt } from '../tilt.js';
+import { Collection } from '../collection.js';
 
 export function renderCard(card, pool) {
   const m = GAME_META[card.game];
@@ -43,6 +44,10 @@ export function renderCard(card, pool) {
           <a href="/${m.slug}/random" class="btn-rnd" data-link="/${m.slug}/random">✦ Draw Random</a>
         </div>
 
+        <div class="card-browse-link">
+          <a href="/${m.slug}/browse" data-link="/${m.slug}/browse">Browse all ${esc(m.short)} cards →</a>
+        </div>
+
         <div class="card-layout">
           <div class="card-img-zone">
             <div class="card-glow"></div>
@@ -60,6 +65,10 @@ export function renderCard(card, pool) {
             <div class="card-actions">
               <a href="/${m.slug}/random" class="btn-primary" data-link="/${m.slug}/random">Draw Another</a>
               <a href="/" class="btn-ghost" data-link="/">All Games</a>
+              <button type="button" id="collect-toggle" class="btn-ghost btn-collect${Collection.has(card) ? ' active' : ''}"
+                      aria-pressed="${Collection.has(card)}">
+                ${Collection.has(card) ? '★ In My Collection' : '☆ Add to Collection'}
+              </button>
             </div>
             <div class="card-nav">
               ${navPrev}
@@ -73,6 +82,14 @@ export function renderCard(card, pool) {
   initTilt(document.querySelector('.card-img-wrap'));
   const img = document.querySelector('.card-img');
   if (img) img.addEventListener('error', () => img.classList.add('error'), { once: true });
+
+  const collectBtn = document.getElementById('collect-toggle');
+  collectBtn.addEventListener('click', () => {
+    const isNowCollected = Collection.toggle(card);
+    collectBtn.classList.toggle('active', isNowCollected);
+    collectBtn.setAttribute('aria-pressed', String(isNowCollected));
+    collectBtn.textContent = isNowCollected ? '★ In My Collection' : '☆ Add to Collection';
+  });
 
   return {
     keyNav: {

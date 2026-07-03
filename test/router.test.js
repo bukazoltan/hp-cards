@@ -47,3 +47,14 @@ test('malformed id is passed through as rawId for the caller to reject', () => {
   assert.equal(r.kind, 'card');
   assert.equal(r.rawId, 'not-a-number');
 });
+
+test('/:game/browse resolves to the browse route', () => {
+  const r = parseRoute('/hp2/browse');
+  assert.equal(r.kind, 'browse');
+  assert.equal(r.game, 'HP2');
+  assert.equal(r.gameSlug, 'hp2');
+});
+
+test('/:game/browse for an unknown game still falls back to home', () => {
+  assert.equal(parseRoute('/hp9/browse').kind, 'home');
+});
