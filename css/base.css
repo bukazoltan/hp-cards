@@ -224,6 +224,14 @@ body::after {
   outline-offset: 2px;
 }
 
+/* Headings receive tabindex="-1" so the router can move focus to them
+   after navigation (for screen readers); they're never reachable via
+   Tab, so the visible ring would only ever show as an unwanted flash
+   on page load/navigation rather than in response to keyboard use. */
+h1[tabindex="-1"]:focus-visible {
+  outline: none;
+}
+
 .skip-link {
   position: absolute;
   top: -100%;
