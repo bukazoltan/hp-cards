@@ -32,6 +32,7 @@
 html {
   height: 100%;
   scroll-behavior: smooth;
+  font-size: 18px; /* most sizes below are in rem, which is relative to this, not body's font-size */
 }
 
 body {
@@ -41,7 +42,7 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
-  font-size: 19px;
+  font-size: 21px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

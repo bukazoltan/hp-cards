@@ -58,3 +58,7 @@ test('/:game/browse resolves to the browse route', () => {
 test('/:game/browse for an unknown game still falls back to home', () => {
   assert.equal(parseRoute('/hp9/browse').kind, 'home');
 });
+
+test('/collection is the cross-game collection route', () => {
+  assert.equal(parseRoute('/collection').kind, 'collection');
+});

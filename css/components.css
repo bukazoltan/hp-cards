@@ -1024,6 +1024,14 @@
   color: var(--text-dim);
 }
 
+.collection-note {
+  max-width: 32rem;
+  margin: .9rem auto 0;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
 .browse-controls {
   display: flex;
   flex-wrap: wrap;
@@ -1135,6 +1143,15 @@
 
 .browse-thumb-rarity {
   margin-top: .6rem;
+}
+
+.browse-thumb-game {
+  font-family: 'Cinzel', serif;
+  font-size: .6rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: .3rem;
 }
 
 .browse-fav-btn {

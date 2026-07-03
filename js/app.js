@@ -8,6 +8,7 @@ import { renderCard } from './views/card.js';
 import { renderTriple } from './views/triple.js';
 import { renderShared } from './views/shared.js';
 import { renderBrowse } from './views/browse.js';
+import { renderCollection } from './views/collection.js';
 
 Theme.init();
 initStarfield();
@@ -18,7 +19,14 @@ async function init() {
 
   const router = createRouter({
     cards,
-    views: { home: renderHome, card: renderCard, triple: renderTriple, shared: renderShared, browse: renderBrowse },
+    views: {
+      home: renderHome,
+      card: renderCard,
+      triple: renderTriple,
+      shared: renderShared,
+      browse: renderBrowse,
+      collection: renderCollection,
+    },
   });
   router.init();
 }
