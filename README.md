@@ -15,15 +15,18 @@ A static single-page app displaying the collectible wizard cards from the Harry 
 - Shared draw – the same character across all three games (`/shared/random`)
 - Light and dark theme, preference saved in the browser
 - Animated starfield background
+- Per-card link previews (Open Graph/Twitter cards) when sharing a `/:game/:id` URL
 
 ## Project structure
 
 ```
 hp-cards/
-├── index.html      # App shell: head meta/OG tags + body skeleton
-├── css/            # base.css (theme/reset) + components.css (page styles)
-├── js/             # ES modules: router, views, card rendering, theme, etc.
-├── test/           # node --test unit tests for the pure logic (router, data, util)
+├── index.html                       # App shell: head meta/OG tags + body skeleton
+├── css/                              # base.css (theme/reset) + components.css (page styles)
+├── js/                                # ES modules: router, views, card rendering, theme, etc.
+├── test/                               # node --test unit tests for the pure logic (router, data, util, og-meta)
+├── netlify/edge-functions/og-meta.js     # Rewrites OG/Twitter meta tags per card for link-preview bots
+├── netlify.toml                          # Registers og-meta as an edge function for /hp1|hp2|hp3/*
 ├── cards.json      # Scraped card data (206 cards)
 ├── _redirects      # Netlify SPA routing rule
 └── images/
@@ -32,7 +35,7 @@ hp-cards/
     └── hp3/        # Prisoner of Azkaban card images (by category subfolder)
 ```
 
-No build step or bundler — `index.html` loads `js/app.js` as a native ES module (`<script type="module">`), and CSS/JS are served as plain static files.
+No build step or bundler — `index.html` loads `js/app.js` as a native ES module (`<script type="module">`), and CSS/JS are served as plain static files. The one exception is `netlify/edge-functions/og-meta.js`, a small Netlify Edge Function (runs at the CDN edge, no separate build/deploy pipeline) that rewrites the static OG/Twitter meta tags with the specific card's name, description, and image when a `/:game/:id` URL is requested — needed because link-unfurling bots (Twitter/Discord/Slack/etc.) don't run the client-side JS that would otherwise render that content.
 
 ## Tests
 

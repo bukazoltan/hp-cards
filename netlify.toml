@@ -1,0 +1,14 @@
+[build]
+  publish = "."
+
+[[edge_functions]]
+  path = "/hp1/*"
+  function = "og-meta"
+
+[[edge_functions]]
+  path = "/hp2/*"
+  function = "og-meta"
+
+[[edge_functions]]
+  path = "/hp3/*"
+  function = "og-meta"
